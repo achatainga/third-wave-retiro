@@ -23,7 +23,7 @@ export default function Admin() {
   const [busqueda, setBusqueda] = useState('');
   const [filtroTipo, setFiltroTipo] = useState('todos');
 
-  const ADMIN_PASSWORD = 'ThirdWave2024';
+  const ADMIN_PASSWORD = 'ThirdWave2026';
 
   useEffect(() => {
     if (authenticated) {
