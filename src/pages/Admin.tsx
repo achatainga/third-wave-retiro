@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { toast } from 'react-toastify';
-import { Download, Lock, Users, Calendar } from 'lucide-react';
+import { Download, Lock, Users, Calendar, Trash2 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -87,6 +87,19 @@ export default function Admin() {
 
     doc.save(`third-wave-registros-${new Date().toISOString().split('T')[0]}.pdf`);
     toast.success('PDF descargado exitosamente');
+  };
+
+  const handleDelete = async (id: string, nombre: string) => {
+    if (confirm(`¿Eliminar registro de ${nombre}?`)) {
+      try {
+        await deleteDoc(doc(db, 'registros', id));
+        toast.success('Registro eliminado');
+        cargarRegistros();
+      } catch (error) {
+        console.error('Error al eliminar:', error);
+        toast.error('Error al eliminar registro');
+      }
+    }
   };
 
   const registrosFiltrados = registros.filter(r => {
@@ -239,6 +252,7 @@ export default function Admin() {
                     <th className="px-6 py-4 text-left text-sm font-semibold text-slate-300">Teléfono</th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-slate-300">Tipo</th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-slate-300">Registrado</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-slate-300">Acciones</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800">
@@ -260,6 +274,15 @@ export default function Admin() {
                       </td>
                       <td className="px-6 py-4 text-sm text-slate-400">
                         {registro.fechaRegistro?.toDate().toLocaleDateString('es-DO')}
+                      </td>
+                      <td className="px-6 py-4">
+                        <button
+                          onClick={() => handleDelete(registro.id, registro.nombreApellido)}
+                          className="text-red-400 hover:text-red-300 transition-colors"
+                          title="Eliminar registro"
+                        >
+                          <Trash2 size={18} />
+                        </button>
                       </td>
                     </tr>
                   ))}
