@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { collection, addDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { toast } from 'react-toastify';
+import { Volume2, VolumeX, Play } from 'lucide-react';
 
 export default function Registro() {
   const [formData, setFormData] = useState({
@@ -11,6 +12,29 @@ export default function Registro() {
     tipo: ''
   });
   const [loading, setLoading] = useState(false);
+  const [videoMuted, setVideoMuted] = useState(true);
+  const [videoEnded, setVideoEnded] = useState(false);
+
+  const toggleMute = () => {
+    const video = document.getElementById('bgVideo') as HTMLVideoElement;
+    if (video) {
+      video.muted = !video.muted;
+      setVideoMuted(video.muted);
+    }
+  };
+
+  const replayVideo = () => {
+    const video = document.getElementById('bgVideo') as HTMLVideoElement;
+    if (video) {
+      video.currentTime = 0;
+      video.play();
+      setVideoEnded(false);
+    }
+  };
+
+  const handleVideoEnd = () => {
+    setVideoEnded(true);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,16 +63,44 @@ export default function Registro() {
 
   return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4 relative">
-      {/* Background Video - Vertical for mobile, Image for desktop */}
+      {/* Background Video - Vertical for mobile */}
       <video 
-        autoPlay 
-        loop 
-        muted 
+        id="bgVideo"
+        autoPlay
+        muted
         playsInline
+        onEnded={handleVideoEnd}
         className="absolute inset-0 w-full h-full object-cover md:hidden"
+        style={{ display: videoEnded ? 'none' : 'block' }}
       >
         <source src="/VideoRetiroVertical.mp4" type="video/mp4" />
       </video>
+
+      {/* Botón de audio (corneta) */}
+      {!videoEnded && (
+        <button
+          onClick={toggleMute}
+          className="absolute top-4 right-4 z-20 bg-slate-900/70 hover:bg-slate-800/70 text-white p-3 rounded-full md:hidden"
+        >
+          {videoMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
+        </button>
+      )}
+
+      {/* Background Image - After video ends */}
+      {videoEnded && (
+        <>
+          <div 
+            className="absolute inset-0 bg-cover bg-center md:hidden"
+            style={{ backgroundImage: 'url(/retiro-vertical.jpeg)' }}
+          />
+          <button
+            onClick={replayVideo}
+            className="absolute top-4 right-4 z-20 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold p-3 rounded-full md:hidden flex items-center gap-2"
+          >
+            <Play size={20} />
+          </button>
+        </>
+      )}
       <div 
         className="absolute inset-0 bg-cover bg-center hidden md:block"
         style={{ backgroundImage: 'url(/retiro-horizontal.jpeg)' }}
