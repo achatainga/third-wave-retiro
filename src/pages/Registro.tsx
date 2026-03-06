@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { collection, addDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { toast } from 'react-toastify';
-import { Volume2, VolumeX, Play } from 'lucide-react';
+import { Volume2, VolumeX, Play, Download } from 'lucide-react';
 
 export default function Registro() {
   const [formData, setFormData] = useState({
@@ -14,6 +14,28 @@ export default function Registro() {
   const [loading, setLoading] = useState(false);
   const [videoMuted, setVideoMuted] = useState(true);
   const [videoEnded, setVideoEnded] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [showInstallButton, setShowInstallButton] = useState(false);
+
+  useEffect(() => {
+    const handler = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstallButton(true);
+    };
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setShowInstallButton(false);
+    }
+    setDeferredPrompt(null);
+  };
 
   const toggleMute = () => {
     const video = document.getElementById('bgVideo') as HTMLVideoElement;
@@ -83,6 +105,17 @@ export default function Registro() {
           className="absolute top-4 right-4 z-20 bg-slate-900/70 hover:bg-slate-800/70 text-white p-3 rounded-full md:hidden"
         >
           {videoMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
+        </button>
+      )}
+
+      {/* Botón Instalar PWA */}
+      {showInstallButton && (
+        <button
+          onClick={handleInstallClick}
+          className="absolute top-4 left-4 z-20 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold py-2 px-4 rounded-full flex items-center gap-2 text-sm"
+        >
+          <Download size={18} />
+          Instalar App
         </button>
       )}
 
