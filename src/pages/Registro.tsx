@@ -14,6 +14,8 @@ export default function Registro() {
   const [loading, setLoading] = useState(false);
   const [videoMuted, setVideoMuted] = useState(true);
   const [videoEnded, setVideoEnded] = useState(false);
+  const [videoMutedDesktop, setVideoMutedDesktop] = useState(true);
+  const [videoEndedDesktop, setVideoEndedDesktop] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [showInstallButton, setShowInstallButton] = useState(false);
 
@@ -56,6 +58,27 @@ export default function Registro() {
 
   const handleVideoEnd = () => {
     setVideoEnded(true);
+  };
+
+  const toggleMuteDesktop = () => {
+    const video = document.getElementById('bgVideoDesktop') as HTMLVideoElement;
+    if (video) {
+      video.muted = !video.muted;
+      setVideoMutedDesktop(video.muted);
+    }
+  };
+
+  const replayVideoDesktop = () => {
+    const video = document.getElementById('bgVideoDesktop') as HTMLVideoElement;
+    if (video) {
+      video.currentTime = 0;
+      video.play();
+      setVideoEndedDesktop(false);
+    }
+  };
+
+  const handleVideoEndDesktop = () => {
+    setVideoEndedDesktop(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -119,7 +142,7 @@ export default function Registro() {
         </button>
       )}
 
-      {/* Background Image - After video ends */}
+      {/* Background Image - After video ends (mobile) */}
       {videoEnded && (
         <>
           <div 
@@ -134,10 +157,45 @@ export default function Registro() {
           </button>
         </>
       )}
-      <div 
-        className="absolute inset-0 bg-cover bg-center hidden md:block"
-        style={{ backgroundImage: 'url(/retiro-horizontal.jpeg)' }}
-      />
+
+      {/* Background Video - Horizontal for desktop */}
+      <video 
+        id="bgVideoDesktop"
+        autoPlay
+        muted
+        playsInline
+        onEnded={handleVideoEndDesktop}
+        className="absolute inset-0 w-full h-full object-cover hidden md:block"
+        style={{ display: videoEndedDesktop ? 'none' : 'block' }}
+      >
+        <source src="/VideoRetiroHorizontal.mp4" type="video/mp4" />
+      </video>
+
+      {/* Botón de audio (corneta) - Desktop */}
+      {!videoEndedDesktop && (
+        <button
+          onClick={toggleMuteDesktop}
+          className="absolute top-4 right-4 z-20 bg-slate-900/70 hover:bg-slate-800/70 text-white p-3 rounded-full hidden md:block"
+        >
+          {videoMutedDesktop ? <VolumeX size={24} /> : <Volume2 size={24} />}
+        </button>
+      )}
+
+      {/* Background Image - After video ends (desktop) */}
+      {videoEndedDesktop && (
+        <>
+          <div 
+            className="absolute inset-0 bg-cover bg-center hidden md:block"
+            style={{ backgroundImage: 'url(/retiro-horizontal.jpeg)' }}
+          />
+          <button
+            onClick={replayVideoDesktop}
+            className="absolute top-4 right-4 z-20 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold p-3 rounded-full hidden md:flex items-center gap-2"
+          >
+            <Play size={20} />
+          </button>
+        </>
+      )}
       <div className="max-w-md w-full relative z-10">
         <div className="bg-slate-900/77 rounded-2xl shadow-2xl p-8 border border-slate-700/30">
           <div className="text-center mb-8">
