@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { collection, addDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { toast } from 'react-toastify';
-import { UserPlus, Calendar, Phone, Users } from 'lucide-react';
 
 export default function Registro() {
   const [formData, setFormData] = useState({
