@@ -121,13 +121,23 @@ export default function Registro() {
         <source src="/VideoRetiroVertical.mp4" type="video/mp4" />
       </video>
 
-      {/* Botón de audio (corneta) */}
+      {/* Botón de audio (corneta) - Mobile */}
       {!videoEnded && (
         <button
           onClick={toggleMute}
           className="absolute top-4 right-4 z-20 bg-slate-900/70 hover:bg-slate-800/70 text-white p-3 rounded-full md:hidden"
         >
           {videoMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
+        </button>
+      )}
+
+      {/* Botón de audio (corneta) - Desktop */}
+      {!videoEndedDesktop && (
+        <button
+          onClick={toggleMuteDesktop}
+          className="absolute top-4 right-4 z-20 bg-slate-900/70 hover:bg-slate-800/70 text-white p-3 rounded-full hidden md:block"
+        >
+          {videoMutedDesktop ? <VolumeX size={24} /> : <Volume2 size={24} />}
         </button>
       )}
 
@@ -166,21 +176,9 @@ export default function Registro() {
         playsInline
         onEnded={handleVideoEndDesktop}
         className="absolute inset-0 w-full h-full object-cover hidden md:block"
-        style={{ display: videoEndedDesktop ? 'none' : 'block' }}
       >
         <source src="/VideoRetiroHorizontal.mp4" type="video/mp4" />
       </video>
-
-      {/* Botón de audio (corneta) - Desktop */}
-      {!videoEndedDesktop && (
-        <button
-          onClick={toggleMuteDesktop}
-          className="absolute top-4 right-4 z-20 bg-slate-900/70 hover:bg-slate-800/70 text-white p-3 rounded-full hidden md:block"
-        >
-          {videoMutedDesktop ? <VolumeX size={24} /> : <Volume2 size={24} />}
-        </button>
-      )}
-
       {/* Background Image - After video ends (desktop) */}
       {videoEndedDesktop && (
         <>
@@ -196,6 +194,7 @@ export default function Registro() {
           </button>
         </>
       )}
+
       <div className="max-w-md w-full relative z-10">
         <div className="bg-slate-900/77 rounded-2xl shadow-2xl p-8 border border-slate-700/30">
           <div className="text-center mb-8">
