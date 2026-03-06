@@ -1,0 +1,26 @@
+// Reglas de Seguridad para Firestore
+// Copiar y pegar en Firebase Console > Firestore Database > Reglas
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Colección de registros
+    match /registros/{document} {
+      // Permitir crear registros (formulario público)
+      allow create: if true;
+      
+      // Permitir leer registros (panel admin)
+      allow read: if true;
+      
+      // Bloquear actualizaciones y eliminaciones
+      allow update, delete: if false;
+    }
+  }
+}
+
+// NOTA: En producción, considera agregar validación adicional:
+// - Limitar tamaño de campos
+// - Validar formato de datos
+// - Rate limiting por IP
+// - Autenticación para lectura (admin)
