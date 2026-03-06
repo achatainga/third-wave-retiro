@@ -143,6 +143,7 @@ export default function Registro() {
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-amber-500 mb-2 bg-slate-950/70 py-2 px-4 rounded-lg inline-block">Third Wave</h1>
             <p className="text-slate-400 bg-slate-950/70 py-1 px-3 rounded-lg inline-block mt-2">Retiro - Alcance Victoria</p>
+            <p className="text-amber-400 text-lg font-semibold bg-slate-950/70 py-1 px-3 rounded-lg inline-block mt-2">Reedificando el Altar</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">

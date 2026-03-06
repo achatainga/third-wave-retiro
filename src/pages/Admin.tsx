@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { collection, getDocs, query, orderBy, deleteDoc, doc } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { toast } from 'react-toastify';
-import { Download, Lock, Users, Calendar, Trash2 } from 'lucide-react';
+import { Download, Lock, Users, Calendar, Trash2, Edit2, Save, X } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -22,6 +22,8 @@ export default function Admin() {
   const [loading, setLoading] = useState(false);
   const [busqueda, setBusqueda] = useState('');
   const [filtroTipo, setFiltroTipo] = useState('todos');
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editData, setEditData] = useState<Partial<Registro>>({});
 
   const ADMIN_PASSWORD = 'ThirdWave2026';
 
@@ -99,6 +101,30 @@ export default function Admin() {
         console.error('Error al eliminar:', error);
         toast.error('Error al eliminar registro');
       }
+    }
+  };
+
+  const startEdit = (registro: Registro) => {
+    setEditingId(registro.id);
+    setEditData(registro);
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditData({});
+  };
+
+  const saveEdit = async () => {
+    if (!editingId) return;
+    try {
+      await updateDoc(doc(db, 'registros', editingId), editData);
+      toast.success('Registro actualizado');
+      setEditingId(null);
+      setEditData({});
+      cargarRegistros();
+    } catch (error) {
+      console.error('Error al actualizar:', error);
+      toast.error('Error al actualizar registro');
     }
   };
 
@@ -259,30 +285,100 @@ export default function Admin() {
                   {registrosFiltrados.map((registro, index) => (
                     <tr key={registro.id} className="hover:bg-slate-800/30">
                       <td className="px-6 py-4 text-sm text-slate-400">{index + 1}</td>
-                      <td className="px-6 py-4 text-sm font-medium text-white">{registro.nombreApellido}</td>
-                      <td className="px-6 py-4 text-sm text-slate-400">{registro.fechaNacimiento}</td>
-                      <td className="px-6 py-4 text-sm text-slate-400">{registro.telefono}</td>
+                      <td className="px-6 py-4 text-sm font-medium text-white">
+                        {editingId === registro.id ? (
+                          <input
+                            type="text"
+                            value={editData.nombreApellido || ''}
+                            onChange={(e) => setEditData({...editData, nombreApellido: e.target.value})}
+                            className="px-2 py-1 bg-slate-800 border border-slate-700 rounded text-white text-sm w-full"
+                          />
+                        ) : registro.nombreApellido}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-slate-400">
+                        {editingId === registro.id ? (
+                          <input
+                            type="date"
+                            value={editData.fechaNacimiento || ''}
+                            onChange={(e) => setEditData({...editData, fechaNacimiento: e.target.value})}
+                            className="px-2 py-1 bg-slate-800 border border-slate-700 rounded text-white text-sm"
+                          />
+                        ) : registro.fechaNacimiento}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-slate-400">
+                        {editingId === registro.id ? (
+                          <input
+                            type="tel"
+                            value={editData.telefono || ''}
+                            onChange={(e) => setEditData({...editData, telefono: e.target.value})}
+                            className="px-2 py-1 bg-slate-800 border border-slate-700 rounded text-white text-sm w-full"
+                          />
+                        ) : registro.telefono}
+                      </td>
                       <td className="px-6 py-4">
-                        <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full border ${
-                          registro.tipo === 'NewGen' ? 'bg-purple-500/20 text-purple-300 border-purple-500/30' :
-                          registro.tipo === 'HighSchool' ? 'bg-pink-500/20 text-pink-300 border-pink-500/30' :
-                          registro.tipo === 'Gang' ? 'bg-orange-500/20 text-orange-300 border-orange-500/30' :
-                          'bg-red-500/20 text-red-300 border-red-500/30'
-                        }`}>
-                          {registro.tipo}
-                        </span>
+                        {editingId === registro.id ? (
+                          <select
+                            value={editData.tipo || ''}
+                            onChange={(e) => setEditData({...editData, tipo: e.target.value})}
+                            className="px-2 py-1 bg-slate-800 border border-slate-700 rounded text-white text-sm"
+                          >
+                            <option value="NewGen">NewGen</option>
+                            <option value="HighSchool">HighSchool</option>
+                            <option value="Gang">Gang</option>
+                            <option value="GangAdulto">Gang Adulto</option>
+                          </select>
+                        ) : (
+                          <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full border ${
+                            registro.tipo === 'NewGen' ? 'bg-purple-500/20 text-purple-300 border-purple-500/30' :
+                            registro.tipo === 'HighSchool' ? 'bg-pink-500/20 text-pink-300 border-pink-500/30' :
+                            registro.tipo === 'Gang' ? 'bg-orange-500/20 text-orange-300 border-orange-500/30' :
+                            'bg-red-500/20 text-red-300 border-red-500/30'
+                          }`}>
+                            {registro.tipo}
+                          </span>
+                        )}
                       </td>
                       <td className="px-6 py-4 text-sm text-slate-400">
                         {registro.fechaRegistro?.toDate().toLocaleDateString('es-DO')}
                       </td>
                       <td className="px-6 py-4">
-                        <button
-                          onClick={() => handleDelete(registro.id, registro.nombreApellido)}
-                          className="text-red-400 hover:text-red-300 transition-colors"
-                          title="Eliminar registro"
-                        >
-                          <Trash2 size={18} />
-                        </button>
+                        <div className="flex gap-2">
+                          {editingId === registro.id ? (
+                            <>
+                              <button
+                                onClick={saveEdit}
+                                className="text-green-400 hover:text-green-300 transition-colors"
+                                title="Guardar"
+                              >
+                                <Save size={18} />
+                              </button>
+                              <button
+                                onClick={cancelEdit}
+                                className="text-slate-400 hover:text-slate-300 transition-colors"
+                                title="Cancelar"
+                              >
+                                <X size={18} />
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <button
+                                onClick={() => startEdit(registro)}
+                                className="text-amber-400 hover:text-amber-300 transition-colors"
+                                title="Editar"
+                              >
+                                <Edit2 size={18} />
+                              </button>
+                              <button
+                                onClick={() => handleDelete(registro.id, registro.nombreApellido)}
+                                className="text-red-400 hover:text-red-300 transition-colors"
+                                title="Eliminar"
+                              >
+                                <Trash2 size={18} />
+                              </button>
+                            </>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))}
