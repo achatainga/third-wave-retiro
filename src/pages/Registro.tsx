@@ -39,71 +39,65 @@ export default function Registro() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900 flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
-        <div className="bg-white rounded-2xl shadow-2xl p-8">
+    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4 relative">
+      {/* Background Image - Horizontal for desktop, Vertical for mobile */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center hidden md:block"
+        style={{ backgroundImage: 'url(/retiro-horizontal.jpeg)' }}
+      />
+      <div 
+        className="absolute inset-0 bg-cover bg-center md:hidden"
+        style={{ backgroundImage: 'url(/retiro-vertical.jpeg)' }}
+      />
+      <div className="max-w-md w-full relative z-10">
+        <div className="bg-slate-900/77 rounded-2xl shadow-2xl p-8 border border-slate-700/30">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-blue-900 mb-2">Third Wave</h1>
-            <p className="text-gray-600">Retiro - Alcance Victoria</p>
+            <h1 className="text-3xl font-bold text-amber-500 mb-2 bg-slate-950/70 py-2 px-4 rounded-lg inline-block">Third Wave</h1>
+            <p className="text-slate-400 bg-slate-950/70 py-1 px-3 rounded-lg inline-block mt-2">Retiro - Alcance Victoria</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-                <UserPlus size={18} />
-                Nombre y Apellido *
-              </label>
               <input
                 type="text"
                 required
                 value={formData.nombreApellido}
                 onChange={(e) => setFormData({ ...formData, nombreApellido: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Juan Pérez"
+                className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent text-white placeholder-slate-400"
+                placeholder="Nombre y Apellido *"
               />
             </div>
 
-            <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-                <Calendar size={18} />
-                Fecha de Nacimiento *
-              </label>
+            <div className="relative">
+              <label className="absolute -top-2 left-3 bg-slate-800 px-2 text-xs text-slate-400 z-10">Fecha de Nacimiento *</label>
               <input
                 type="date"
                 required
                 value={formData.fechaNacimiento}
                 onChange={(e) => setFormData({ ...formData, fechaNacimiento: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent text-white"
               />
             </div>
 
             <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-                <Phone size={18} />
-                Teléfono (o del representante) *
-              </label>
               <input
                 type="tel"
                 required
                 value={formData.telefono}
                 onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="(809) 555-1234"
+                className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent text-white placeholder-slate-400"
+                placeholder="Teléfono (o del representante) *"
               />
             </div>
 
             <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-                <Users size={18} />
-                Tipo *
-              </label>
               <select
                 required
                 value={formData.tipo}
                 onChange={(e) => setFormData({ ...formData, tipo: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent text-white"
               >
-                <option value="">Selecciona una opción</option>
+                <option value="">Tipo *</option>
                 <option value="NewGen">NewGen</option>
                 <option value="HighSchool">HighSchool</option>
                 <option value="Gang">Gang</option>
@@ -114,15 +108,15 @@ export default function Registro() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-amber-500 hover:bg-amber-600 text-slate-900 font-semibold py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Registrando...' : 'Registrarme'}
             </button>
           </form>
 
-          <p className="text-center text-sm text-gray-500 mt-6">
+          <p className="text-center text-sm text-slate-400 mt-6 bg-slate-950/70 py-2 px-4 rounded-lg inline-block w-full">
             ¿Eres administrador?{' '}
-            <a href="/admin" className="text-blue-600 hover:underline">
+            <a href="/admin" className="text-amber-500 hover:underline">
               Ir al panel
             </a>
           </p>
