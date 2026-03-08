@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { collection, addDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { toast } from 'react-toastify';
-import { Volume2, VolumeX, Play, Download, Square } from 'lucide-react';
+import { Volume2, VolumeX, Play, Download, Square, Pause } from 'lucide-react';
 
 export default function Registro() {
   const [formData, setFormData] = useState({
@@ -254,7 +254,7 @@ export default function Registro() {
               onClick={() => showVideo ? pauseVideo() : pauseVideoDesktop()}
               className="bg-slate-900/70 hover:bg-slate-800/70 text-white font-bold py-2 px-4 rounded-full flex items-center gap-2 text-sm"
             >
-              <Play size={18} />
+              {(showVideo && videoPaused) || (showVideoDesktop && videoPausedDesktop) ? <Play size={18} /> : <Pause size={18} />}
               {(showVideo && videoPaused) || (showVideoDesktop && videoPausedDesktop) ? 'Reanudar' : 'Pausar'}
             </button>
             <button
